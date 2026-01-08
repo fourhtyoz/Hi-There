@@ -9,7 +9,14 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev:server": "cd packages/server && npm run dev",
     "dev:client": "cd packages/client && npm run dev",
-    "dev": "npm run dev:server && npm run dev:client"
+    "dev": "npm run dev:server && npm run dev:client",
+    "db:generate": "npx prisma generate",
+    "db:push": "npx prisma db push",
+    "db:migrate": "npx prisma migrate dev",
+    "db:ui": "npx prisma studio"
+  },
+  "lint-staged": {
+        "**/*": "prettier --write --ignore-unknown"
   },
   "repository": {
     "type": "git",

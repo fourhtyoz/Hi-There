@@ -1,0 +1,103 @@
+generator client {
+  provider        = "prisma-client"
+  output          = "../generated/prisma"
+  engineType      = "client"
+}
+
+datasource db {
+    provider = "postgresql"
+}
+
+model User {
+  id              String    @id @default(cuid())
+  email           String    @unique
+  passwordHash    String
+  displayName     String
+  age             Int
+  gender          String
+  bio             String?
+  
+  // Location (store encrypted or with reduced precision for privacy)
+  latitude        Float?
+  longitude       Float?
+  city            String?
+  country         String?
+  
+  // Photos
+  photos          UserPhoto[]
+  
+  // Preferences
+  minAgePreference Int      @default(18)
+  maxAgePreference Int      @default(99)
+  genderPreference String[] // Array of acceptable genders
+  
+  // Timestamps
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  lastActiveAt    DateTime  @default(now())
+  
+  // Relations
+  swipesGiven     Swipe[]   @relation("UserSwipesGiven")
+  swipesReceived  Swipe[]   @relation("UserSwipesReceived")
+  matchesAsUser1  Match[]   @relation("MatchesAsUser1")
+  matchesAsUser2  Match[]   @relation("MatchesAsUser2")
+  messagesSent    Message[] @relation("MessagesSent")
+  
+  @@index([latitude, longitude])
+  @@index([lastActiveAt])
+}
+
+model UserPhoto {
+  id        String   @id @default(cuid())
+  url       String
+  order     Int      @default(0)
+  verified  Boolean  @default(false)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+}
+
+model Swipe {
+  id        String   @id @default(cuid())
+  swiperId  String
+  targetId  String
+  direction String   // "left" or "right"
+  createdAt DateTime @default(now())
+  
+  swiper    User     @relation("UserSwipesGiven", fields: [swiperId], references: [id])
+  target    User     @relation("UserSwipesReceived", fields: [targetId], references: [id])
+  
+  @@unique([swiperId, targetId])
+  @@index([targetId, createdAt])
+}
+
+model Match {
+  id             String     @id @default(cuid())
+  user1Id        String
+  user2Id        String
+  createdAt      DateTime   @default(now())
+  lastMessageAt  DateTime?
+  
+  user1          User       @relation("MatchesAsUser1", fields: [user1Id], references: [id])
+  user2          User       @relation("MatchesAsUser2", fields: [user2Id], references: [id])
+  messages       Message[]
+  
+  @@unique([user1Id, user2Id])
+  @@index([user1Id, lastMessageAt])
+  @@index([user2Id, lastMessageAt])
+}
+
+model Message {
+  id        String   @id @default(cuid())
+  matchId   String
+  senderId  String
+  content   String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  
+  match     Match    @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  sender    User     @relation("MessagesSent", fields: [senderId], references: [id])
+  
+  @@index([matchId, createdAt])
+}
