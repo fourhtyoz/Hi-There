@@ -1,0 +1,26 @@
+{
+  "name": "hi-there",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "private": true,
+  "workspaces": ["packages/*"],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev:server": "cd packages/server && npm run dev",
+    "dev:client": "cd packages/client && npm run dev",
+    "dev": "npm run dev:server && npm run dev:client"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fourhtyoz/Hi-There.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/fourhtyoz/Hi-There/issues"
+  },
+  "homepage": "https://github.com/fourhtyoz/Hi-There#readme"
+}
