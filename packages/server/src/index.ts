@@ -19,7 +19,7 @@ app.use(express.json());
 // Socket.IO setup
 const io = new Server(httpServer, {
   cors: {
-    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    origin: process.env.FRONTEND_URL || 'http://localhost:5173',
     credentials: true
   },
   connectionStateRecovery: {
@@ -30,8 +30,12 @@ const io = new Server(httpServer, {
 initializeSocket(io);
 
 app.get('/health', (req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+  res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
 });
+
+app.get('/', (req, res) => {
+    res.status(200).json({ status: 'ok' })
+})
 
 const PORT = process.env.PORT || 4000;
 httpServer.listen(PORT, () => {
